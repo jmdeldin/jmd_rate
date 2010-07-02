@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="jmd_rate" basedir="." default="default">
+    <!-- ============================================= -->
+    <!-- Properties                                    -->
+    <!-- ============================================= -->
+    <!-- override defaults -->
+    <property file="build.properties"/>
+    <property name="src.dir"    value="src"/>
+    <property name="build.dir"  value="build"/>
+    <!--linked fname -->
+    <property name="build.file" value="${build.dir}/${ant.project.name}.php"/>
+    <property name="dist.dir"   value="dist"/>
+    <property name="readme.file" value="${basedir}/README.textile"/>
+    <!-- dir to copy build to -->
+    <property name="deploy.dir" value="deploy"/>
+    <!-- path to txpc -->
+    <property name="txpc"       value="txpc"/>
+    <!-- file to be linked & compiled -->
+    <property name="main.file"  value="${src.dir}/jmd_rate.php"/>
+    <!-- path to phpcs -->
+    <property name="phpcs"      value="phpcs"/>
+    <property name="reports.dir" value="reports"/>
+
+    <!-- ============================================= -->
+    <!-- Target: default                               -->
+    <!-- ============================================= -->
+    <target name="default" depends="usage"/>
+
+    <!-- ============================================= -->
+    <!-- Target: usage                                 -->
+    <!-- ============================================= -->
+    <target name="usage"
+        description="Displays usage information.">
+        <echo message="Run ``ant -p'' for a list of targets."/>
+    </target>
+    <target name="help" depends="usage"/>
+
+    <!-- ============================================= -->
+    <!-- Target: build                                 -->
+    <!-- ============================================= -->
+    <target name="build"
+        description="Links the source files into one file.">
+        <mkdir dir="${build.dir}"/>
+        <exec executable="${txpc}" failonerror="true">
+            <arg value="${main.file}"/>
+            <arg value="--link=${build.dir}"/>
+        </exec>
+    </target>
+
+    <!-- ============================================= -->
+    <!-- Target: dist                                  -->
+    <!-- ============================================= -->
+    <target name="dist"
+        depends="build"
+        description="Compiles a distributable plugin.">
+        <mkdir dir="${dist.dir}"/>
+        <exec executable="${txpc}" failonerror="true">
+            <arg value="${build.file}"/>
+            <arg value="--compile=${dist.dir}"/>
+            <arg value="--readme=${readme.file}"/>
+        </exec>
+    </target>
+
+    <!-- ============================================= -->
+    <!-- Target: deploy                                -->
+    <!-- ============================================= -->
+    <target name="deploy"
+        depends="dist"
+        description="Copies the dist files to the plugin cache dir.">
+        <copy file="${build.file}"
+            preservelastmodified="true"
+            todir="${deploy.dir}"
+            verbose="true"/>
+    </target>
+
+    <!-- ============================================= -->
+    <!-- Target: style                                 -->
+    <!-- ============================================= -->
+    <target name="style"
+        description="Checks the source code for PEAR-style conformance">
+        <exec executable="phpcs"
+            output="${reports.dir}/style"
+            failonerror="true">
+            <arg value="${src.dir}"/>
+        </exec>
+    </target>
+
+    <!-- ============================================= -->
+    <!-- Target: report                                -->
+    <!-- ============================================= -->
+    <target name="report"
+        description="Reports on dead code, LOC, etc.">
+        <mkdir dir="${reports.dir}"/>
+        <!-- TODO: phpdcd, etc -->
+        <!-- LOC & complexity -->
+        <exec executable="phploc"
+            output="${reports.dir}/phploc"
+            failonerror="true">
+            <arg value="${src.dir}"/>
+        </exec>
+    </target>
+
+    <!-- ============================================= -->
+    <!-- Target: clean                                 -->
+    <!-- ============================================= -->
+    <target name="clean"
+        description="Removes build and dist files">
+        <delete dir="${build.dir}" includeemptydirs="true" verbose="true"/>
+        <delete dir="${dist.dir}" includeemptydirs="true" verbose="true"/>
+        <delete dir="${reports.dir}" includeemptydirs="true" verbose="true"/>
+    </target>
+</project>
+
