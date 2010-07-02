@@ -1,14 +1,14 @@
 <?php
 
-$plugin['version'] = '0.4';
-$plugin['author'] = 'Jon-Michael Deldin';
-$plugin['author_uri'] = 'http:// jmdeldin.com/';
-$plugin['description'] = 'CSS star rater.';
-$plugin['type'] = 1;
-
-if (!defined('txpinterface')) @include_once 'zem_tpl.php';
-
-# --- BEGIN PLUGIN CODE ---
+/**
+ * @name            jmd_rate
+ * @description     CSS star rater
+ * @author          Jon-Michael Deldin
+ * @author_uri      http://jmdeldin.com
+ * @version         0.4-DEV
+ * @type            1
+ * @order           5
+ */
 
 //--------------------------------------
 // admin
@@ -439,6 +439,3 @@ HTML;
     }
 }
 
-# --- END PLUGIN CODE ---
-
-?>
